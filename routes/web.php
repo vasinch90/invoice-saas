@@ -4,6 +4,7 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\InvoiceController;
+use Laravel\Cashier\Http\Controllers\WebhookController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -24,5 +25,7 @@ Route::middleware('auth')->group(function () {
     Route::get('invoices/{invoice}/pdf', [InvoiceController::class, 'pdf'])
         ->name('invoices.pdf');
 });
+
+Route::post('stripe/webhook', [WebhookController::class, 'handleWebhook']);
 
 require __DIR__.'/auth.php';
