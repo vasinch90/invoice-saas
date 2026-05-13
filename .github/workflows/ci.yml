@@ -58,7 +58,7 @@ jobs:
           STRIPE_KEY: ${{ secrets.STRIPE_KEY }}
           STRIPE_SECRET: ${{ secrets.STRIPE_SECRET }}
           STRIPE_WEBHOOK_SECRET: ${{ secrets.STRIPE_WEBHOOK_SECRET }}
-        run: php artisan test --env=testing --stop-on-failure -v 2>&1 | tee test-output.txt
+        run: php artisan test --env=testing --stop-on-failure --verbose 2>&1 | tee test-output.txt
 
       - name: Show test output
         if: always()
