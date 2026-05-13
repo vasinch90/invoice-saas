@@ -54,7 +54,7 @@ class InvoiceTest extends TestCase
     public function test_user_can_create_invoice(): void
     {
         $this->actingAs($this->user)
-            ->post('http://test-tenant.localhost/invoices'), [
+            ->post('http://test-tenant.localhost/invoices', [
                 'client_id'  => $this->client->id,
                 'issue_date' => '2025-01-01',
                 'due_date'   => '2025-01-31',
