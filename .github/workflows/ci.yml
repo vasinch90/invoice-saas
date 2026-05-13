@@ -33,6 +33,12 @@ jobs:
       - name: Generate key
         run: php artisan key:generate --env=testing
 
+      - name: Install Node dependencies
+        run: npm ci
+
+      - name: Build assets
+        run: npm run build
+
       - name: Run tests
         env:
           APP_ENV: testing
