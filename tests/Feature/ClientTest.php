@@ -16,14 +16,7 @@ class ClientTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        // $this->user = User::factory()->create();
-        try {
-            $this->user = User::factory()->create();
-            file_put_contents('/tmp/debug.txt', "setUp OK - user: " . $this->user->id . "\n");
-        } catch (\Exception $e) {
-            file_put_contents('/tmp/debug.txt', "setUp FAILED: " . $e->getMessage() . "\n");
-            throw $e;
-        }
+        $this->user = User::factory()->create();
     }
 
     public function test_guest_cannot_access_clients(): void
@@ -34,23 +27,10 @@ class ClientTest extends TestCase
 
     public function test_user_can_view_clients_index(): void
     {
-        // $this->actingAs($this->user)
-        //     ->get(route('clients.index'))
-        //     ->assertOk()
-        //     ->assertViewIs('clients.index');
-
-        $url = route('clients.index');
-        file_put_contents('/tmp/debug.txt', "URL: $url\nUser: " . $this->user->id . "\n");
-        
-        $response = $this->actingAs($this->user)
-            ->get($url);
-
-        file_put_contents('/tmp/debug.txt', file_get_contents('/tmp/debug.txt') . 
-            "Status: " . $response->status() . "\n" .
-            "Location: " . $response->headers->get('Location') . "\n"
-        );
-        
-        $response->assertOk();
+        $this->actingAs($this->user)
+        ->get(route('clients.index'))
+        ->assertOk()
+        ->assertViewIs('clients.index');
     }
 
     public function test_user_can_create_client(): void
