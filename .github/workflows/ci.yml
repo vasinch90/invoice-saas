@@ -39,6 +39,13 @@ jobs:
       - name: Build assets
         run: npm run build
 
+      - name: Debug routes
+        env:
+          APP_ENV: testing
+          DB_CONNECTION: sqlite
+          DB_DATABASE: ":memory:"
+        run: php artisan route:list --env=testing | grep clients
+
       - name: Run tests
         env:
           APP_ENV: testing
