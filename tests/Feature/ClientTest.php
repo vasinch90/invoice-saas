@@ -16,7 +16,14 @@ class ClientTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->user = User::factory()->create();
+        // $this->user = User::factory()->create();
+        try {
+            $this->user = User::factory()->create();
+            file_put_contents('/tmp/debug.txt', "setUp OK - user: " . $this->user->id . "\n");
+        } catch (\Exception $e) {
+            file_put_contents('/tmp/debug.txt', "setUp FAILED: " . $e->getMessage() . "\n");
+            throw $e;
+        }
     }
 
     public function test_guest_cannot_access_clients(): void
