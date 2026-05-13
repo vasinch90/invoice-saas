@@ -39,14 +39,14 @@ class InvoiceTest extends TestCase
 
     public function test_guest_cannot_access_invoices(): void
     {
-        $this->get(route('invoices.index'))
+        $this->get('http://test-tenant.localhost/invoices')
             ->assertRedirect(route('login'));
     }
 
     public function test_user_can_view_invoices_index(): void
     {
         $this->actingAs($this->user)
-            ->get(route('invoices.index'))
+            ->get('http://test-tenant.localhost/invoices'))
             ->assertOk()
             ->assertViewIs('invoices.index');
     }
@@ -54,7 +54,7 @@ class InvoiceTest extends TestCase
     public function test_user_can_create_invoice(): void
     {
         $this->actingAs($this->user)
-            ->post(route('invoices.store'), [
+            ->post('http://test-tenant.localhost/invoices'), [
                 'client_id'  => $this->client->id,
                 'issue_date' => '2025-01-01',
                 'due_date'   => '2025-01-31',
@@ -81,7 +81,7 @@ class InvoiceTest extends TestCase
     public function test_invoice_number_is_auto_generated(): void
     {
         $this->actingAs($this->user)
-            ->post(route('invoices.store'), [
+            ->post('http://test-tenant.localhost/invoices'), [
                 'client_id'  => $this->client->id,
                 'issue_date' => '2025-01-01',
                 'due_date'   => '2025-01-31',
@@ -101,7 +101,7 @@ class InvoiceTest extends TestCase
     public function test_user_cannot_create_invoice_without_items(): void
     {
         $this->actingAs($this->user)
-            ->post(route('invoices.store'), [
+            ->post('http://test-tenant.localhost/invoices'), [
                 'client_id'  => $this->client->id,
                 'issue_date' => '2025-01-01',
                 'due_date'   => '2025-01-31',
@@ -118,8 +118,8 @@ class InvoiceTest extends TestCase
         ]);
 
         $this->actingAs($this->user)
-            ->delete(route('invoices.destroy', $invoice))
-            ->assertRedirect(route('invoices.index'));
+            ->delete('http://test-tenant.localhost/invoices/' . $invoice->id)
+            ->assertRedirect('http://test-tenant.localhost/invoices/');
 
         $this->assertDatabaseMissing('invoices', ['id' => $invoice->id]);
     }
@@ -134,7 +134,7 @@ class InvoiceTest extends TestCase
         ]);
 
         $this->actingAs($this->user)
-            ->get(route('invoices.show', $invoice))
+            ->get('http://test-tenant.localhost/invoices/' . $invoice->id)
             ->assertForbidden();
     }
 }
