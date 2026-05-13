@@ -81,7 +81,7 @@ class InvoiceTest extends TestCase
     public function test_invoice_number_is_auto_generated(): void
     {
         $this->actingAs($this->user)
-            ->post('http://test-tenant.localhost/invoices'), [
+            ->post('http://test-tenant.localhost/invoices', [
                 'client_id'  => $this->client->id,
                 'issue_date' => '2025-01-01',
                 'due_date'   => '2025-01-31',
@@ -101,7 +101,7 @@ class InvoiceTest extends TestCase
     public function test_user_cannot_create_invoice_without_items(): void
     {
         $this->actingAs($this->user)
-            ->post('http://test-tenant.localhost/invoices'), [
+            ->post('http://test-tenant.localhost/invoices', [
                 'client_id'  => $this->client->id,
                 'issue_date' => '2025-01-01',
                 'due_date'   => '2025-01-31',
