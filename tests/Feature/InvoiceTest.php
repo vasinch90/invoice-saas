@@ -25,10 +25,18 @@ class InvoiceTest extends TestCase
             'email' => 'test@tenant.com',
         ]);
         $tenant->domains()->create(['domain' => 'test-tenant.localhost']);
-        tenancy()->initialize($tenant);
 
-        $this->user   = User::factory()->create();
-        $this->client = Client::factory()->create(['user_id' => $this->user->id]);
+        $tenant->run(function () {
+            \Illuminate\Support\Facades\Artisan::call('tenants:migrate', [
+                '--tenants' => ['test-tenant'],
+            ]);
+        });
+
+        $tenant->run(function () {
+            $this->user   = User::factory()->create();
+            $this->client = Client::factory()->create(['user_id' => $this->user->id]);
+        });
+
     }
 
     protected function tearDown(): void

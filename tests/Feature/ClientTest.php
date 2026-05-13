@@ -25,7 +25,17 @@ class ClientTest extends TestCase
         ]);
         $tenant->domains()->create(['domain' => 'test-tenant.localhost']);
 
-        $this->user = User::factory()->create();
+        // รัน tenant migrations
+        $tenant->run(function () {
+            \Illuminate\Support\Facades\Artisan::call('tenants:migrate', [
+                '--tenants' => ['test-tenant'],
+            ]);
+        });
+
+        // สร้าง user ใน tenant context
+        $tenant->run(function () {
+            $this->user = User::factory()->create();
+        });
     }
 
     protected function tearDown(): void
