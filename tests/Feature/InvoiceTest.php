@@ -46,7 +46,7 @@ class InvoiceTest extends TestCase
     public function test_user_can_view_invoices_index(): void
     {
         $this->actingAs($this->user)
-            ->get('http://test-tenant.localhost/invoices'))
+            ->get('http://test-tenant.localhost/invoices')
             ->assertOk()
             ->assertViewIs('invoices.index');
     }
