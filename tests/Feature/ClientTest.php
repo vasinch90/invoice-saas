@@ -35,10 +35,13 @@ class ClientTest extends TestCase
         $response = $this->actingAs($this->user)
         ->get(route('clients.index'));
 
-        // debug ดู redirect location
-        file_put_contents('/tmp/debug.txt', "Status: $status\nLocation: $location\n");
-
-        $response->assertOk();
+    $location = $response->headers->get('Location');
+    $status = $response->status();
+    
+    // เขียนลง log file แทน
+    file_put_contents('/tmp/debug.txt', "Status: $status\nLocation: $location\n");
+    
+    $response->assertOk();
     }
 
     public function test_user_can_create_client(): void
