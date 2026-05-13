@@ -6,6 +6,17 @@ use App\Http\Controllers\ClientController;
 use App\Http\Controllers\InvoiceController;
 use Laravel\Cashier\Http\Controllers\WebhookController;
 
+// เพิ่มเฉพาะ testing environment
+if (app()->environment('testing')) {
+    Route::middleware('auth')->group(function () {
+        Route::resource('clients', \App\Http\Controllers\ClientController::class)
+            ->except(['show']);
+        Route::resource('invoices', \App\Http\Controllers\InvoiceController::class);
+        Route::get('invoices/{invoice}/pdf', [\App\Http\Controllers\InvoiceController::class, 'pdf'])
+            ->name('invoices.pdf');
+    });
+}
+
 Route::get('/', function () {
     return view('welcome');
 });
@@ -27,16 +38,5 @@ Route::middleware('auth')->group(function () {
 });
 
 Route::post('stripe/webhook', [WebhookController::class, 'handleWebhook']);
-
-// เพิ่มเฉพาะ testing environment
-if (app()->environment('testing')) {
-    Route::middleware('auth')->group(function () {
-        Route::resource('clients', \App\Http\Controllers\ClientController::class)
-            ->except(['show']);
-        Route::resource('invoices', \App\Http\Controllers\InvoiceController::class);
-        Route::get('invoices/{invoice}/pdf', [\App\Http\Controllers\InvoiceController::class, 'pdf'])
-            ->name('invoices.pdf');
-    });
-}
 
 require __DIR__.'/auth.php';
