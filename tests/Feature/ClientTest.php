@@ -36,8 +36,7 @@ class ClientTest extends TestCase
         ->get(route('clients.index'));
 
         // debug ดู redirect location
-        dump($response->headers->get('Location'));
-        dump($response->status());
+        file_put_contents('/tmp/debug.txt', "Status: $status\nLocation: $location\n");
 
         $response->assertOk();
     }

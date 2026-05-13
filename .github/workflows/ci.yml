@@ -46,6 +46,10 @@ jobs:
           DB_DATABASE: ":memory:"
         run: php artisan route:list --env=testing | grep clients
 
+      - name: Show debug log
+        if: always()
+        run: cat /tmp/debug.txt 2>/dev/null || echo "No debug log"
+        
       - name: Run tests
         env:
           APP_ENV: testing
