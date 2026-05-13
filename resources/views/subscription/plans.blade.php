@@ -62,7 +62,7 @@
                 @if(!$isSubscribed)
                 <form method="POST" action="{{ route('subscription.checkout') }}">
                     @csrf
-                    <input type="hidden" name="price_id" value="price_xxxxxxxxxx">
+                    <input type="hidden" name="price_id" value="price_1TWCo3IIt8nUJso852sOaXUz">
                     <button type="submit"
                             class="w-full bg-blue-600 text-white py-2 rounded font-medium">
                         เริ่มทดลองใช้ฟรี 14 วัน

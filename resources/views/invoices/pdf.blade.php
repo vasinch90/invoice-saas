@@ -3,7 +3,17 @@
 <head>
     <meta charset="utf-8">
     <style>
-        body { font-family: sans-serif; font-size: 13px; color: #333; }
+        @font-face {
+            font-family: 'Sarabun';
+            src: url('{{ storage_path("fonts/Sarabun-Regular.ttf") }}');
+            font-weight: normal;
+        }
+        @font-face {
+            font-family: 'Sarabun';
+            src: url('{{ storage_path("fonts/Sarabun-Bold.ttf") }}');
+            font-weight: bold;
+        }
+        body { font-family: 'Sarabun', sans-serif; font-size: 13px; color: #333; }
         .header { display: flex; justify-content: space-between; margin-bottom: 30px; }
         h1 { font-size: 24px; color: #1d4ed8; }
         table { width: 100%; border-collapse: collapse; margin-top: 20px; }
