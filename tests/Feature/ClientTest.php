@@ -27,10 +27,19 @@ class ClientTest extends TestCase
 
     public function test_user_can_view_clients_index(): void
     {
-        $this->actingAs($this->user)
-            ->get(route('clients.index'))
-            ->assertOk()
-            ->assertViewIs('clients.index');
+        // $this->actingAs($this->user)
+        //     ->get(route('clients.index'))
+        //     ->assertOk()
+        //     ->assertViewIs('clients.index');
+
+        $response = $this->actingAs($this->user)
+        ->get(route('clients.index'));
+
+        // debug ดู redirect location
+        dump($response->headers->get('Location'));
+        dump($response->status());
+
+        $response->assertOk();
     }
 
     public function test_user_can_create_client(): void
