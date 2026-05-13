@@ -32,16 +32,18 @@ class ClientTest extends TestCase
         //     ->assertOk()
         //     ->assertViewIs('clients.index');
 
+        $url = route('clients.index');
+        file_put_contents('/tmp/debug.txt', "URL: $url\nUser: " . $this->user->id . "\n");
+        
         $response = $this->actingAs($this->user)
-        ->get(route('clients.index'));
+            ->get($url);
 
-    $location = $response->headers->get('Location');
-    $status = $response->status();
-    
-    // เขียนลง log file แทน
-    file_put_contents('/tmp/debug.txt', "Status: $status\nLocation: $location\n");
-    
-    $response->assertOk();
+        file_put_contents('/tmp/debug.txt', file_get_contents('/tmp/debug.txt') . 
+            "Status: " . $response->status() . "\n" .
+            "Location: " . $response->headers->get('Location') . "\n"
+        );
+        
+        $response->assertOk();
     }
 
     public function test_user_can_create_client(): void
