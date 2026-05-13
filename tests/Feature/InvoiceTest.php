@@ -18,8 +18,23 @@ class InvoiceTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+
+        $tenant = Tenant::create([
+            'id'    => 'test-tenant',
+            'name'  => 'Test Tenant',
+            'email' => 'test@tenant.com',
+        ]);
+        $tenant->domains()->create(['domain' => 'test-tenant.localhost']);
+        tenancy()->initialize($tenant);
+
         $this->user   = User::factory()->create();
         $this->client = Client::factory()->create(['user_id' => $this->user->id]);
+    }
+
+    protected function tearDown(): void
+    {
+        tenancy()->end();
+        parent::tearDown();
     }
 
     public function test_guest_cannot_access_invoices(): void

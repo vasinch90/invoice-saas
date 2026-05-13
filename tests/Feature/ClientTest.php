@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\User;
 use App\Models\Client;
+use App\Models\Tenant;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -16,7 +17,23 @@ class ClientTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+
+        // สร้าง tenant และ initialize
+        $tenant = Tenant::create([
+            'id'    => 'test-tenant',
+            'name'  => 'Test Tenant',
+            'email' => 'test@tenant.com',
+        ]);
+        $tenant->domains()->create(['domain' => 'test-tenant.localhost']);
+        tenancy()->initialize($tenant);
+
         $this->user = User::factory()->create();
+    }
+
+    protected function tearDown(): void
+    {
+        tenancy()->end();
+        parent::tearDown();
     }
 
     public function test_guest_cannot_access_clients(): void
