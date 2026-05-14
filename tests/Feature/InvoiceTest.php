@@ -128,7 +128,7 @@ class InvoiceTest extends TestCase
 
         $this->actingAs($this->user)
             ->delete('http://test-tenant.localhost/invoices/' . $invoice->id)
-            ->assertRedirect('http://test-tenant.localhost/invoices/');
+            ->assertRedirect('http://test-tenant.localhost/invoices');
 
         $this->assertDatabaseMissing('invoices', ['id' => $invoice->id]);
     }
