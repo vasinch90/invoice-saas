@@ -77,6 +77,18 @@ if (app()->environment('production')) {
             ]);
         }
     });
+
+    Route::get('/run-migrations', function () {
+        try {
+            \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
+            return response()->json([
+                'status' => 'done',
+                'output' => \Illuminate\Support\Facades\Artisan::output(),
+            ]);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()]);
+        }
+    });
 }
 
 require __DIR__.'/auth.php';
