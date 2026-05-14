@@ -122,6 +122,49 @@ if (app()->environment('production')) {
         \Illuminate\Support\Facades\DB::statement('ALTER SEQUENCE subscriptions_id_seq RESTART WITH 1');
         return response()->json(['status' => 'reset done']);
     });
+
+    Route::get('/rebuild-cashier-tables', function () {
+        try {
+            // Drop และสร้างใหม่
+            \Illuminate\Support\Facades\DB::statement('DROP TABLE IF EXISTS subscription_items CASCADE');
+            \Illuminate\Support\Facades\DB::statement('DROP TABLE IF EXISTS subscriptions CASCADE');
+
+            // สร้าง subscriptions ใหม่ด้วย string id
+            \Illuminate\Support\Facades\DB::statement('
+                CREATE TABLE subscriptions (
+                    id VARCHAR(255) PRIMARY KEY,
+                    user_id VARCHAR(255) NOT NULL,
+                    type VARCHAR(255) NOT NULL,
+                    stripe_id VARCHAR(255) NOT NULL UNIQUE,
+                    stripe_status VARCHAR(255) NOT NULL,
+                    stripe_price VARCHAR(255),
+                    quantity INTEGER,
+                    trial_ends_at TIMESTAMP,
+                    ends_at TIMESTAMP,
+                    created_at TIMESTAMP,
+                    updated_at TIMESTAMP
+                )
+            ');
+
+            // สร้าง subscription_items ใหม่
+            \Illuminate\Support\Facades\DB::statement('
+                CREATE TABLE subscription_items (
+                    id BIGSERIAL PRIMARY KEY,
+                    subscription_id VARCHAR(255) NOT NULL REFERENCES subscriptions(id) ON DELETE CASCADE,
+                    stripe_id VARCHAR(255) NOT NULL UNIQUE,
+                    stripe_product VARCHAR(255),
+                    stripe_price VARCHAR(255) NOT NULL,
+                    quantity INTEGER,
+                    created_at TIMESTAMP,
+                    updated_at TIMESTAMP
+                )
+            ');
+
+            return response()->json(['status' => 'tables rebuilt successfully']);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()]);
+        }
+    });
 }
 
 require __DIR__.'/auth.php';
