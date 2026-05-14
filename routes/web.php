@@ -59,6 +59,24 @@ if (app()->environment('production')) {
             'stripe_id' => $tenant->stripe_id,
         ]);
     });
+
+    Route::get('/debug-plans', function () {
+        try {
+            $tenant = \App\Models\Tenant::find('demo');
+            $sub = $tenant->subscriptions()->first();
+            return response()->json([
+                'tenant'       => $tenant,
+                'stripe_id'    => $tenant->stripe_id,
+                'subscription' => $sub,
+                'subscribed'   => $tenant->subscribed('default'),
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+        }
+    });
 }
 
 require __DIR__.'/auth.php';
