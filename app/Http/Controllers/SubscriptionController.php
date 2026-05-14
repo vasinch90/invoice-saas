@@ -17,8 +17,8 @@ class SubscriptionController extends Controller
             ->first();
             
         return view('subscription.plans', [
-            'isSubscribed' => $tenant->subscribed('default'),
-            'onTrial'      => $tenant->onTrial(),
+            'isSubscribed' => $sub ? true : false,
+            'onTrial'      => $sub && $sub->trial_ends_at && $sub->trial_ends_at > now(),
             'plan'         => $sub?->stripe_price,
         ]);
     }
