@@ -11,7 +11,9 @@ RUN apk add --no-cache \
     git \
     oniguruma-dev \
     libxml2-dev \
-    mysql-client
+    mysql-client \
+    postgresql-dev \
+    libpq-dev
 
 # Install PHP extensions
 RUN docker-php-ext-install \
