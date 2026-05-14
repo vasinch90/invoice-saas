@@ -22,6 +22,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        if (app()->environment('production')) {
+            \Illuminate\Support\Facades\URL::forceScheme('https');
+        }
         Cashier::useCustomerModel(\App\Models\Tenant::class);
 
         \Stancl\Tenancy\Middleware\InitializeTenancyByDomain::$onFail = function () {
