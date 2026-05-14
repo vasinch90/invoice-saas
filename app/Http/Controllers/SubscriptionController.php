@@ -10,10 +10,16 @@ class SubscriptionController extends Controller
     public function plans()
     {
         $tenant = tenant();
+
+        $sub = \Illuminate\Support\Facades\DB::table('subscriptions')
+            ->where('user_id', $tenant->id)
+            ->whereIn('stripe_status', ['active', 'trialing'])
+            ->first();
+            
         return view('subscription.plans', [
             'isSubscribed' => $tenant->subscribed('default'),
             'onTrial'      => $tenant->onTrial(),
-            'plan'         => $tenant->subscription('default')?->stripe_price,
+            'plan'         => $sub?->stripe_price,
         ]);
     }
 
