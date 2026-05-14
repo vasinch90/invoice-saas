@@ -114,6 +114,14 @@ if (app()->environment('production')) {
             return response()->json(['error' => $e->getMessage()]);
         }
     });
+
+    Route::get('/reset-subscriptions', function () {
+        \Illuminate\Support\Facades\DB::statement('TRUNCATE TABLE subscription_items CASCADE');
+        \Illuminate\Support\Facades\DB::statement('TRUNCATE TABLE subscriptions CASCADE');
+        \Illuminate\Support\Facades\DB::statement('ALTER TABLE subscriptions ALTER COLUMN id TYPE VARCHAR(255) USING id::VARCHAR');
+        \Illuminate\Support\Facades\DB::statement('ALTER SEQUENCE subscriptions_id_seq RESTART WITH 1');
+        return response()->json(['status' => 'reset done']);
+    });
 }
 
 require __DIR__.'/auth.php';
