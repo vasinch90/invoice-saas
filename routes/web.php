@@ -28,4 +28,37 @@ Route::middleware('auth')->group(function () {
 
 Route::post('stripe/webhook', [WebhookController::class, 'handleWebhook']);
 
+if (app()->environment('production')) {
+    Route::get('/sync-subscription', function () {
+        $tenant = \App\Models\Tenant::find('demo');
+        $stripe = new \Stripe\StripeClient(config('cashier.secret'));
+        $subscriptions = $stripe->subscriptions->all([
+            'customer' => $tenant->stripe_id
+        ]);
+
+        foreach ($subscriptions->data as $sub) {
+            \Laravel\Cashier\Subscription::updateOrCreate(
+                ['stripe_id' => $sub->id],
+                [
+                    'user_id'       => $tenant->id,
+                    'type'          => 'default',
+                    'stripe_status' => $sub->status,
+                    'stripe_price'  => $sub->items->data[0]->price->id,
+                    'quantity'      => 1,
+                    'trial_ends_at' => $sub->trial_end
+                        ? \Carbon\Carbon::createFromTimestamp($sub->trial_end)
+                        : null,
+                    'ends_at'       => null,
+                ]
+            );
+        }
+
+        return response()->json([
+            'status' => 'synced',
+            'subscriptions' => $subscriptions->count(),
+            'stripe_id' => $tenant->stripe_id,
+        ]);
+    });
+}
+
 require __DIR__.'/auth.php';
