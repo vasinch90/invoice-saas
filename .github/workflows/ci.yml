@@ -39,13 +39,6 @@ jobs:
       - name: Build assets
         run: npm run build
 
-      - name: Copy .env
-        run: |
-          cp .env.example .env.testing
-          echo "SESSION_DRIVER=array" >> .env.testing
-          echo "DB_CONNECTION=sqlite" >> .env.testing
-          echo "DB_DATABASE=:memory:" >> .env.testing
-
       - name: Debug routes
         env:
           APP_ENV: testing
@@ -56,6 +49,13 @@ jobs:
       - name: Show debug log
         if: always()
         run: cat /tmp/debug.txt 2>/dev/null || echo "No debug log"
+
+      - name: Copy .env
+        run: |
+          cp .env.example .env.testing
+          echo "SESSION_DRIVER=array" >> .env.testing
+          echo "DB_CONNECTION=sqlite" >> .env.testing
+          echo "DB_DATABASE=:memory:" >> .env.testing
 
       - name: Run tests
         env:
