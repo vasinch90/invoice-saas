@@ -74,17 +74,19 @@ if (app()->environment('production')) {
     Route::get('/debug-plans', function () {
         try {
             $tenant = \App\Models\Tenant::find('demo');
-            $sub = $tenant->subscriptions()->first();
+            $sub = \Illuminate\Support\Facades\DB::table('subscriptions')
+                ->where('user_id', $tenant->id)
+                ->first();
+
             return response()->json([
                 'tenant'       => $tenant,
                 'stripe_id'    => $tenant->stripe_id,
                 'subscription' => $sub,
-                'subscribed'   => $tenant->subscribed('default'),
+                'subscribed'   => $sub ? true : false,
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
             ]);
         }
     });
