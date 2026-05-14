@@ -100,6 +100,20 @@ if (app()->environment('production')) {
             return response()->json(['error' => $e->getMessage()]);
         }
     });
+
+    Route::get('/fix-all-columns', function () {
+        try {
+            \Illuminate\Support\Facades\DB::statement(
+                'ALTER TABLE subscriptions ALTER COLUMN id TYPE VARCHAR(255) USING id::VARCHAR'
+            );
+            \Illuminate\Support\Facades\DB::statement(
+                'ALTER TABLE subscription_items ALTER COLUMN subscription_id TYPE VARCHAR(255) USING subscription_id::VARCHAR'
+            );
+            return response()->json(['status' => 'all fixed']);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()]);
+        }
+    });
 }
 
 require __DIR__.'/auth.php';
