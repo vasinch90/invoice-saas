@@ -25,17 +25,8 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Cashier::useCustomerModel(\App\Models\Tenant::class);
-
-        // บอก Cashier ว่า id เป็น string
-        Subscription::creating(function ($model) {
-            $model->incrementing = false;
-            $model->keyType = 'string';
-        });
-
-        // override items relationship
-        Subscription::resolveRelationUsing('items', function ($model) {
-            return $model->hasMany(SubscriptionItem::class, 'subscription_id', 'id');
-        });
+        Cashier::useSubscriptionModel(\App\Models\Subscription::class);
+        Cashier::useSubscriptionItemModel(\App\Models\SubscriptionItem::class);
 
         if (app()->environment('production')) {
             \Illuminate\Support\Facades\URL::forceScheme('https');
