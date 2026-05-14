@@ -147,3 +147,4 @@ class InvoiceTest extends TestCase
             ->assertForbidden();
     }
 }
+ 
