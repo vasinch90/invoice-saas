@@ -30,34 +30,45 @@ Route::post('stripe/webhook', [WebhookController::class, 'handleWebhook']);
 
 if (app()->environment('production')) {
     Route::get('/sync-subscription', function () {
-        $tenant = \App\Models\Tenant::find('demo');
-        $stripe = new \Stripe\StripeClient(config('cashier.secret'));
-        $subscriptions = $stripe->subscriptions->all([
-            'customer' => $tenant->stripe_id
-        ]);
+        try {
+            $tenant = \App\Models\Tenant::find('demo');
+            $stripe = new \Stripe\StripeClient(config('cashier.secret'));
+            $subscriptions = $stripe->subscriptions->all(['customer' => $tenant->stripe_id]);
 
-        foreach ($subscriptions->data as $sub) {
-            \Laravel\Cashier\Subscription::updateOrCreate(
-                ['stripe_id' => $sub->id],
-                [
-                    'user_id'       => $tenant->id,
-                    'type'          => 'default',
-                    'stripe_status' => $sub->status,
-                    'stripe_price'  => $sub->items->data[0]->price->id,
-                    'quantity'      => 1,
-                    'trial_ends_at' => $sub->trial_end
-                        ? \Carbon\Carbon::createFromTimestamp($sub->trial_end)
-                        : null,
-                    'ends_at'       => null,
-                ]
-            );
+            $synced = [];
+            foreach ($subscriptions->data as $sub) {
+                \Illuminate\Support\Facades\DB::table('subscriptions')->updateOrInsert(
+                    ['stripe_id' => $sub->id],
+                    [
+                        'id'            => $sub->id,
+                        'user_id'       => $tenant->id,
+                        'type'          => 'default',
+                        'stripe_status' => $sub->status,
+                        'stripe_price'  => $sub->items->data[0]->price->id,
+                        'quantity'      => 1,
+                        'trial_ends_at' => $sub->trial_end
+                            ? date('Y-m-d H:i:s', $sub->trial_end)
+                            : null,
+                        'ends_at'       => null,
+                        'created_at'    => date('Y-m-d H:i:s', $sub->created),
+                        'updated_at'    => date('Y-m-d H:i:s'),
+                    ]
+                );
+                $synced[] = $sub->id;
+            }
+
+            return response()->json([
+                'status'  => 'synced',
+                'synced'  => $synced,
+                'count'   => count($synced),
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => $e->getMessage(),
+                'line'  => $e->getLine(),
+                'file'  => $e->getFile(),
+            ]);
         }
-
-        return response()->json([
-            'status' => 'synced',
-            'subscriptions' => $subscriptions->count(),
-            'stripe_id' => $tenant->stripe_id,
-        ]);
     });
 
     Route::get('/debug-plans', function () {
